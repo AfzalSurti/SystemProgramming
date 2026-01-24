@@ -1,0 +1,23 @@
+::1 GET / 200
+::1 GET /favicon.ico 404
+${req.ip} GET /login 500
+::1 GET /loginAfzal 404
+::1 GET / 200
+::1 GET /login 500
+::1 GET /login 200
+::1 GET / 200
+::1 GET /favicon.ico 404
+::1 GET /login 200
+::1 GET /login 500
+::1 GET /loginndks 404
+[2026-01-12T03:49:25.973Z] ::1 GET / 200
+[12/1/2026, 9:22:03 am] ::1 GET / 200
+[12/1/2026, 3:52:38 pm] ::1 GET / 200
+[12/1/2026, 3:52:38 pm] ::1 GET /favicon.ico 404
+[12/1/2026, 3:54:18 pm] ::1 GET /login 200
+[12/1/2026, 4:05:05 pm] ::1 GET /login 200
+[12/1/2026, 4:05:07 pm] ::1 GET /login 200
+[12/1/2026, 4:05:09 pm] ::1 GET /login 500
+[12/1/2026, 4:05:10 pm] ::1 GET /login 500
+[12/1/2026, 4:05:12 pm] ::1 GET /login 200
+[12/1/2026, 4:05:28 pm] ::1 GET /loginvjhkj 404
