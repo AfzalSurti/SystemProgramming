@@ -2,7 +2,7 @@ let INCIDENTS=[];
 
 function sevBadge(incident){ // severity badge ? - based on status code
     if(incident.status===500) return `<span class="badge b-high">HIGH</span>`;
-    if(incident.status===404) return `<span class="badge b-medium">MEDIUM</span>`;
+    if(incident.status===404) return `<span class="badge b-med">MEDIUM</span>`;
     return `<span class="badge b-low">LOW</span>`;
 }
 
@@ -63,7 +63,7 @@ function renderTable(){ // render incidents table
     let list=INCIDENTS.slice(); // copy array 
 
     if(filter!=="all"){ // apply filter
-        list=list.filter(x=>String(x.stats)===filter);
+        list=list.filter(x=>String(x.status)===filter);
     }
 
     if (q){ // apply search query
