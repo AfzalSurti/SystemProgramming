@@ -1,23 +1,45 @@
-::1 GET / 200
-::1 GET /favicon.ico 404
-${req.ip} GET /login 500
-::1 GET /loginAfzal 404
-::1 GET / 200
-::1 GET /login 500
-::1 GET /login 200
-::1 GET / 200
-::1 GET /favicon.ico 404
-::1 GET /login 200
-::1 GET /login 500
-::1 GET /loginndks 404
-[2026-01-12T03:49:25.973Z] ::1 GET / 200
-[12/1/2026, 9:22:03 am] ::1 GET / 200
-[12/1/2026, 3:52:38 pm] ::1 GET / 200
-[12/1/2026, 3:52:38 pm] ::1 GET /favicon.ico 404
-[12/1/2026, 3:54:18 pm] ::1 GET /login 200
-[12/1/2026, 4:05:05 pm] ::1 GET /login 200
-[12/1/2026, 4:05:07 pm] ::1 GET /login 200
-[12/1/2026, 4:05:09 pm] ::1 GET /login 500
-[12/1/2026, 4:05:10 pm] ::1 GET /login 500
-[12/1/2026, 4:05:12 pm] ::1 GET /login 200
-[12/1/2026, 4:05:28 pm] ::1 GET /loginvjhkj 404
+[25/1/2026, 11:45:54 am] ::1 GET / 200
+[25/1/2026, 11:45:56 am] ::1 GET / 200
+[25/1/2026, 11:45:59 am] ::1 GET /login 200
+[25/1/2026, 11:46:01 am] ::1 GET /afzal 404
+[25/1/2026, 11:46:05 am] ::1 GET /login 200
+[25/1/2026, 11:46:23 am] ::1 GET /login 200
+[25/1/2026, 11:46:24 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:46:26 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:46:28 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:47:46 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:47:47 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:47:51 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:47:52 am] ::1 GET /login 500 - Random login failure
+[25/1/2026, 11:47:54 am] ::1 GET /login 200
+[25/1/2026, 12:14:57 pm] ::1 GET /login 500 - Random login failure
+[25/1/2026, 12:14:59 pm] ::1 GET /login 500 - Random login failure
+[25/1/2026, 12:15:01 pm] ::1 GET /login 200
+[25/1/2026, 12:15:06 pm] ::1 GET /nxvhjdbv 404
+[25/1/2026, 12:15:17 pm] ::1 GET / 200
+[25/1/2026, 12:16:50 pm] ::1 GET / 200
+[25/1/2026, 12:16:52 pm] ::1 GET / 200
+[25/1/2026, 12:16:57 pm] ::1 GET /login 500 - Random login failure
+[25/1/2026, 12:16:58 pm] ::1 GET /login 200
+[25/1/2026, 12:17:01 pm] ::1 GET /login 200
+[25/1/2026, 12:17:05 pm] ::1 GET /login 500 - Random login failure
+[25/1/2026, 12:17:07 pm] ::1 GET /login 200
+[25/1/2026, 12:17:09 pm] ::1 GET /login 200
+[25/1/2026, 12:17:11 pm] ::1 GET /login 200
+[27/1/2026, 1:53:57 pm] ::1 GET / 200
+[27/1/2026, 1:53:58 pm] ::1 GET /favicon.ico 404
+[27/1/2026, 1:54:03 pm] ::1 GET / 200
+[27/1/2026, 1:54:06 pm] ::1 GET / 200
+[27/1/2026, 1:54:07 pm] ::1 GET / 200
+[27/1/2026, 1:54:08 pm] ::1 GET / 200
+[27/1/2026, 1:54:13 pm] ::1 GET /login 200
+[27/1/2026, 1:54:14 pm] ::1 GET /fds 404
+[27/1/2026, 1:54:16 pm] ::1 GET /fds 404
+[27/1/2026, 1:54:19 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:21 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:23 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:24 pm] ::1 GET /login 200
+[27/1/2026, 1:54:25 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:27 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:28 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 1:54:29 pm] ::1 GET /login 200

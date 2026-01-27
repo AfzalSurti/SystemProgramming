@@ -1,0 +1,47 @@
+[
+  {
+    "key": "/login|500",
+    "path": "/login",
+    "status": 500,
+    "count": 17,
+    "lastSeen": "2026-01-27T08:24:29Z",
+    "samples": [
+      "::1 GET /login 500 - Random login failure",
+      "::1 GET /login 500 - Random login failure",
+      "::1 GET /login 500 - Random login failure",
+      "::1 GET /login 500 - Random login failure",
+      "::1 GET /login 500 - Random login failure"
+    ]
+  },
+  {
+    "key": "/fds|404",
+    "path": "/fds",
+    "status": 404,
+    "count": 2,
+    "lastSeen": "2026-01-27T08:24:17Z",
+    "samples": [
+      "::1 GET /fds 404",
+      "::1 GET /fds 404"
+    ]
+  },
+  {
+    "key": "/nxvhjdbv|404",
+    "path": "/nxvhjdbv",
+    "status": 404,
+    "count": 1,
+    "lastSeen": "2026-01-27T08:23:22Z",
+    "samples": [
+      "::1 GET /nxvhjdbv 404"
+    ]
+  },
+  {
+    "key": "/afzal|404",
+    "path": "/afzal",
+    "status": 404,
+    "count": 1,
+    "lastSeen": "2026-01-27T08:23:22Z",
+    "samples": [
+      "::1 GET /afzal 404"
+    ]
+  }
+]

@@ -13,13 +13,17 @@ app.get("/",(req,res)=>{ // define a route for the root URL
 });
 
 app.get("/login",(req,res)=>{
-    if(Math.random()>0.5){ // simulate a login success or failure randomly because of the random number -  we do because we have to check for all use cases
-        log(`${req.ip} GET /login 500`); // log a failed login attempt
-        res.sendStatus(500).send("Server Error"); // send a server error response
-    }
-    else{
-        log(`${req.ip} GET /login 200`); // log a successful login attempt
+    try{
+        if(Math.random()<0.5){
+            throw new Error("Random login failure"); // simulate a random error
+        }
+        log(`${req.ip} ${req.method} ${req.originalUrl} 200`); // log successful login attempt
         res.send("Login Successful"); // send a success response
+    }catch(err){
+
+        log(`${req.ip} ${req.method} ${req.originalUrl} 500 - ${err.message}`); // log error details
+        res.status(500).send("Server Error"); // send a server error response
+        fs.appendFileSync("errors.log",err.stack+"\n\n"); // append the error stack trace to errors.log file
     }
 });
 

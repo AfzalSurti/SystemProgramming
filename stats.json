@@ -1,12 +1,9 @@
 {
-"total": 23,
-"error404": 0,
-"error500": 0,
-"timestamp": "2026-01-12T16:05:30India Standard Time",
+"total": 45,
+"error404": 5,
+"error500": 17,
+"timestamp": "2026-01-27T13:54:31India Standard Time",
 "unique_ips": [
-  {"ip": "::1", "count": 11},
-  {"ip": "${req.ip}", "count": 1},
-  {"ip": "[2026-01-12T03:49:25[12/1/2026,", "count": 1},
-  {"ip": "[12/1/2026,", "count": 10}
+  {"ip": "::1", "count": 45}
 ]
 }

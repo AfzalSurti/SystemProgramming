@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="topbar">
+                <div>
+                    <div class="title">Log Monitor Dashboard</div>
+                    <div class="subtitle">
+                        Live matrix from span<span class="mono">stats.json</span>and group incidents from <span class="mono">incidents.json</span>
+
+                    </div>
+                </div>
+
+                <div class="topbarRight">
+                    <div class="pill"><span class="dot" id ="liveDot">  </span><span id="liveText">Live</span></div>       
+                    <button class="btn" id="refreshbtn">Refresh </button>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <div class="k">Total Requests</div>
+                        <div class="v" id="statTotal">-</div>
+                        <div class="muted" id="statTime">Last updated: -</div>
+                    </div>
+                    <div class="card">
+                        <div class="k">404 Errors</div>
+                        <div class="v" id="stat404">—</div>
+                        <div class="muted">Usually low severity unless repeated on important routes.</div>
+                    </div>
+                    <div class="card">
+                        <div class="k">500 Errors</div>
+                        <div class="v" id="stat500">—</div>
+                        <div class="muted">High severity. Backend is failing.</div>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div class="card">
+                        <div class="toolbar">
+                        <div>
+                            <div class="sectionTitle">Incidents</div>
+                            <div class="muted">Click a row to see details</div>
+                        </div>
+
+                        <div class="leftTools">
+                            <input class="input" id="q" placeholder="Search: /login, 500, /afzal..." />
+                            <select class="select" id="filter">
+                            <option value="all">All</option>
+                            <option value="500">Only 500</option>
+                            <option value="404">Only 404</option>
+                            </select>
+                            <select class="select" id="sort">
+                            <option value="count">Sort: Count</option>
+                            <option value="status">Sort: Status</option>
+                            <option value="path">Sort: Path</option>
+                            <option value="lastSeen">Sort: Last Seen</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id ="tableWrap"></div>
+                </div>
+                <div class="card" id="detailCard">
+                    <div class="panelTitle">Incident Details</div>
+                    <div class="muted">Select an incident from the table.</div>
+                    <div class="sp10"></div>
+
+                    <div class="empty" id="detailEmpty">Nothing selected yet.</div>
+                    <div id="detail" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+        <script src="./app.js"></script>
+    </body>
+</html>
