@@ -43,3 +43,15 @@
 [27/1/2026, 1:54:27 pm] ::1 GET /login 500 - Random login failure
 [27/1/2026, 1:54:28 pm] ::1 GET /login 500 - Random login failure
 [27/1/2026, 1:54:29 pm] ::1 GET /login 200
+[27/1/2026, 6:16:06 pm] ::1 GET / 200
+[27/1/2026, 6:16:07 pm] ::1 GET / 200
+[27/1/2026, 6:16:31 pm] ::1 GET / 200
+[27/1/2026, 6:16:33 pm] ::1 GET /login 200
+[27/1/2026, 6:16:37 pm] ::1 GET /login 200
+[27/1/2026, 6:16:38 pm] ::1 GET /login 200
+[27/1/2026, 6:16:39 pm] ::1 GET /login 200
+[27/1/2026, 6:22:10 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 6:22:11 pm] ::1 GET /login 200
+[27/1/2026, 6:22:14 pm] ::1 GET /login 500 - Random login failure
+[27/1/2026, 6:22:22 pm] ::1 GET /sdgkjnj 404
+[27/1/2026, 6:22:23 pm] ::1 GET /sdgkjnj 404

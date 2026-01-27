@@ -8,6 +8,7 @@ const app=express();
 app.use(express.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, 'public'))); // serve static files from 'public' directory
 
+
 function readJson(filePath,fallback){ // read json file with fallback
     try{
         return JSON.parse(fs.readFileSync(filePath,'utf8'));
