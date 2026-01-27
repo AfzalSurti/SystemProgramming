@@ -9,7 +9,7 @@ app.use(express.json()); // for parsing application/json
 app.use(express.static(path.join(__dirname, 'public'))); // serve static files from 'public' directory
 
 const ROOT=path.join(__dirname,"..");
-const STATS_PATH=path.join(ROOT,"status.json");
+const STATS_PATH=path.join(ROOT,"stats.json");
 const EVENTS_PATH=path.join(ROOT,"events.jsonl");
 const INCIDENTS_PATH=path.join(ROOT,"incidents.json");
 
