@@ -1,0 +1,13 @@
+Log parsing is fragile (different formats break it)
+
+Storage is files (not scalable)
+
+No retention policy / rotation
+
+No alerting (email/slack)
+
+No proper concurrency limits (threads can explode)
+
+No security (dashboard open, no auth)
+
+No performance metrics (latency, p95, p99)

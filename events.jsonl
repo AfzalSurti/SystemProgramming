@@ -72,3 +72,29 @@
 {"ts":"2026-01-27T13:02:37Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
 {"ts":"2026-01-27T13:02:37Z","ip":"::1","method":"GET","path":"/sdgkjnj","status":404,"raw":"::1 GET /sdgkjnj 404"}
 {"ts":"2026-01-27T13:02:37Z","ip":"::1","method":"GET","path":"/fds","status":404,"raw":"::1 GET /fds 404"}
+{"ts":"2026-01-27T15:31:13Z","ip":"::1","method":"GET","path":"/afzal","status":404,"raw":"::1 GET /afzal 404"}
+{"ts":"2026-01-27T15:31:13Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:13Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/fds","status":404,"raw":"::1 GET /fds 404"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/nxvhjdbv","status":404,"raw":"::1 GET /nxvhjdbv 404"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/sdgkjnj","status":404,"raw":"::1 GET /sdgkjnj 404"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/sdgkjnj","status":404,"raw":"::1 GET /sdgkjnj 404"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/fds","status":404,"raw":"::1 GET /fds 404"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-27T15:31:14Z","ip":"::1","method":"GET","path":"/favicon.ico","status":404,"raw":"::1 GET /favicon.ico 404"}
