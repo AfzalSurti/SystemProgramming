@@ -139,20 +139,34 @@ double calc_p95(){
     return copy[idx]; // returning the 95th percentile latency - but why we calculate 95th percentile? - to understand latency distribution
 }
 
+// format current time in IST regardless of the system timezone
+void format_ist(char *out, size_t out_len){
+    const int IST_OFFSET = 5 * 3600 + 30 * 60; // IST is UTC+05:30
+    time_t now = time(NULL) + IST_OFFSET; // shift UTC time to IST
+    struct tm *t = gmtime(&now); // interpret shifted time in UTC
+    char base[32] = "";
+    if(t) strftime(base, sizeof(base), "%Y-%m-%dT%H:%M:%S", t);
+    snprintf(out, out_len, "%s+05:30", base); // append IST offset
+}
+
 void export_JSON(){
     FILE *fp=fopen("stats.json","w"); // opening file in write mode
 
     // get current timestamp in ISO-like format
-    time_t t = time(NULL);
-    struct tm *lt = localtime(&t);
     char timestamp[64];
-    if(lt) strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%S%z", lt);
+    format_ist(timestamp, sizeof(timestamp)); // force IST timestamp for consistency with server.log
 
     fprintf(fp,"{\n"); // starting JSON object
     fprintf(fp,"\"total\": %d,\n", total);
     fprintf(fp,"\"error404\": %d,\n", error404);
     fprintf(fp,"\"error500\": %d,\n", error500);
     fprintf(fp,"\"timestamp\": \"%s\",\n", timestamp);
+
+    double avg_latency=(latency_count>0) ? (latency_sum/latency_count) : 0.0; // calculating average latency
+    double p95_latency=calc_p95(); // calculating 95th percentile latency
+
+    fprintf(fp,"\"avg_latency_ms\": %.2f,\n",avg_latency); // writing average latency to JSON file
+    fprintf(fp,"\"p95_latency_ms\": %.2f,\n",p95_latency);
     fprintf(fp,"\"unique_ips\": [\n");
 
     for(int i=0;i<ipIdx;i++){
@@ -163,11 +177,6 @@ void export_JSON(){
         fprintf(fp,"\n");
     }
 
-    double avg_latency=(latency_count>0) ? (latency_sum/latency_count) : 0.0; // calculating average latency
-    double p95_latency=calc_p95(); // calculating 95th percentile latency
-
-    fprintf(fp,"\"avg_latency_ms\": %.2f,\n",avg_latency); // writing average latency to JSON file
-    fprintf(fp,"\"p95 latency_ms\": %.2f,\n",p95_latency);
     fprintf(fp,"]\n}\n"); // close array and object
     fclose(fp); // closing the file
 }

@@ -29,25 +29,66 @@ function escapeHtml(s){ // escape html special characters ? - for safe display
     .replaceAll("'","&#039;");
 }
 
+function formatIst(ts){ // convert ISO timestamp to IST for display
+  try{
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return ts;
+    return d.toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});
+  }catch{
+    return ts;
+  }
+}
+
+function formatEpochIst(sec){ // convert epoch seconds to IST string
+  try{
+    const d = new Date(Number(sec) * 1000);
+    if (Number.isNaN(d.getTime())) return String(sec);
+    return d.toLocaleString("en-IN",{timeZone:"Asia/Kolkata"});
+  }catch{
+    return String(sec);
+  }
+}
+
+function latencyHealth(avg, p95){ // simple local heuristic (no external model)
+  if (p95 <= 50 && avg <= 30) return {label:"GOOD", cls:"health-good"};
+  if (p95 <= 200) return {label:"WARN", cls:"health-warn"};
+  return {label:"BAD", cls:"health-bad"};
+}
+
 async function loadAll(manual=false){ // load all incidents from server
     try{
-        const [stats,incidents]=await Promise.all([
+        const [stats,incidents,alerts]=await Promise.all([
             fetch("/api/stats").then(res=>res.json()),
-            fetch("/api/incidents").then(res=>res.json())
+            fetch("/api/incidents").then(res=>res.json()),
+            fetch("/api/alerts").then(res=>res.json())
         ]);
 
         const total=stats.total ?? 0;
         const error404=stats.error404 ?? 0;
         const error500=stats.error500 ?? 0;
         const ts=stats.timestamp ?? "N/A";
+        const avgLatency=Number(stats.avg_latency_ms ?? 0);
+        const p95Latency=Number(stats.p95_latency_ms ?? 0);
 
         document.getElementById("statTotal").textContent=total;
         document.getElementById("stat404").textContent=error404;
         document.getElementById("stat500").textContent=error500;
-        document.getElementById("statTime").textContent=`Last Updated: ${ts || "-"}`; //- whatr is this? - timestamp
+        document.getElementById("statTime").textContent=`Last Updated (IST): ${formatIst(ts) || "-"}`; // last stats timestamp
+        document.getElementById("statAvgLatency").textContent=avgLatency.toFixed(2);
+        document.getElementById("statP95Latency").textContent=p95Latency.toFixed(2);
+
+        const health=latencyHealth(avgLatency, p95Latency);
+        document.getElementById("statLatencyHealth").innerHTML =
+          `<span class="health ${health.cls}">${health.label}</span>`;
 
         INCIDENTS=Array.isArray(incidents) ? incidents : [];
+        // show total number of grouped incidents
+        document.getElementById("statIncidents").textContent=INCIDENTS.length;
         renderTable();
+
+        const alertList=Array.isArray(alerts) ? alerts : [];
+        document.getElementById("statAlerts").textContent=alertList.length;
+        renderAlerts(alertList);
 
         setLive(true, manual ? "Manual refresh successful" : "Live");
     }catch(err){
@@ -94,7 +135,8 @@ function renderTable(){ // render incidents table
         <td>${statusBadge(i.status)}</td>
         <td>${sevBadge(i)}</td>
         <td>${i.count ?? 0}</td>
-        <td class="mono muted">${escapeHtml(i.lastSeen||"")}</td>
+        <td>${(i.samples && i.samples.length) ? i.samples.length : 0}</td>
+        <td class="mono muted">${escapeHtml(formatIst(i.lastSeen||""))}</td>
         <td class="muted">${escapeHtml((i.samples && i.samples[0]) ? i.samples[0] : "")}</td>
         </tr>
     `).join("");
@@ -103,7 +145,7 @@ function renderTable(){ // render incidents table
         <table>
         <thead>
             <tr>
-            <th>Path</th><th>Status</th><th>Severity</th><th>Count</th><th>Last Seen (UTC)</th><th>Sample</th>
+            <th>Path</th><th>Status</th><th>Severity</th><th>Count</th><th>Samples</th><th>Last Seen (IST)</th><th>Latest Sample</th>
             </tr>
         </thead>
         <tbody id="tbody">${rows}</tbody>
@@ -126,7 +168,16 @@ function showDetails(i){
   const d = document.getElementById("detail");
   d.style.display = "block";
 
-  const samples = (i.samples || []).join("\n");
+  // show all samples (no 5-log limit)
+  const samples = Array.isArray(i.samples) ? i.samples : [];
+  const sampleHtml = samples.length
+    ? samples.map((s, idx) => `
+        <div class="sampleLine">
+          <div class="sampleIdx">#${idx + 1}</div>
+          <div class="mono">${escapeHtml(s)}</div>
+        </div>
+      `).join("")
+    : `<div class="empty">No samples</div>`;
 
   d.innerHTML = `
     <div class="panelBox">
@@ -138,7 +189,8 @@ function showDetails(i){
         <div class="muted">Status</div><div>${statusBadge(i.status)}</div>
         <div class="muted">Severity</div><div>${sevBadge(i)}</div>
         <div class="muted">Count</div><div>${i.count ?? 0}</div>
-        <div class="muted">Last Seen</div><div class="mono">${escapeHtml(i.lastSeen||"")}</div>
+        <div class="muted">Samples</div><div>${samples.length}</div>
+        <div class="muted">Last Seen (IST)</div><div class="mono">${escapeHtml(formatIst(i.lastSeen||""))}</div>
       </div>
     </div>
 
@@ -150,11 +202,14 @@ function showDetails(i){
           <div style="font-weight:800;">Samples</div>
           <div class="muted">Used later for AI analysis</div>
         </div>
-        <button class="btn" id="copyBtn">Copy Incident JSON</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" id="copyBtn">Copy Incident JSON</button>
+          <button class="btn" id="copySamplesBtn">Copy All Samples</button>
+        </div>
       </div>
 
       <div class="sp10"></div>
-      <pre>${escapeHtml(samples || "No samples")}</pre>
+      <div class="samples">${sampleHtml}</div>
     </div>
 
     <div class="sp10"></div>
@@ -165,6 +220,41 @@ function showDetails(i){
     await navigator.clipboard.writeText(JSON.stringify(i, null, 2));
     alert("Copied incident JSON ✅");
   };
+
+  document.getElementById("copySamplesBtn").onclick = async () => {
+    await navigator.clipboard.writeText(samples.join("\n"));
+    alert("Copied all samples ✅");
+  };
+}
+
+function renderAlerts(alerts){ // render alerts list from alerts.jsonl
+  const wrap=document.getElementById("alertsWrap");
+  if (!alerts.length){
+    wrap.className="empty";
+    wrap.textContent="No alerts yet.";
+    return;
+  }
+
+  const items=alerts
+    .slice(-50)
+    .reverse()
+    .map(a => {
+      const ts=formatEpochIst(a.ts ?? "");
+      const type=escapeHtml(a.type ?? "ALERT");
+      const prev=escapeHtml(String(a.prev ?? ""));
+      const now=escapeHtml(String(a.now ?? ""));
+      return `
+        <div class="alertRow">
+          <div class="alertTitle">${type}</div>
+          <div class="muted mono">${ts}</div>
+          <div class="alertMeta">prev: ${prev} -> now: ${now}</div>
+        </div>
+      `;
+    })
+    .join("");
+
+  wrap.className="alertsList";
+  wrap.innerHTML=items;
 }
 
 // wire inputs

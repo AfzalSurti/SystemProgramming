@@ -12,6 +12,8 @@ const ROOT=path.join(__dirname,"..");
 const STATS_PATH=path.join(ROOT,"stats.json");
 const EVENTS_PATH=path.join(ROOT,"events.jsonl");
 const INCIDENTS_PATH=path.join(ROOT,"incidents.json");
+const ALERTS_PATH=path.join(ROOT,"alerts.jsonl");
+const SAMPLE_LIMIT=0; // 0 = no limit (show all samples in the UI)
 
 
 function readJsonSafe(filePath,fallback){ // read json file with fallback
@@ -64,7 +66,8 @@ function buildIncidents(events){
 
         const sample=String(e.raw || "").replace(/\r?\n/g,"");
 
-        if(inc.samples.length < 5) inc.samples.push(sample);
+        // keep all samples unless a limit is set
+        if(SAMPLE_LIMIT===0 || inc.samples.length < SAMPLE_LIMIT) inc.samples.push(sample);
 
     }
     return [...map.values()].sort((a,b) => (b.count ?? 0) - (a.count ?? 0));
@@ -94,6 +97,10 @@ app.get("/api/incidents",(req,res)=>{
         return res.json(buildIncidents(events));
     }
     res.json(readJsonSafe(INCIDENTS_PATH,[]));
+});
+
+app.get("/api/alerts",(req,res)=>{ // endpoint to get alerts from alerts.jsonl
+    res.json(readJsonlSafe(ALERTS_PATH));
 });
 
 app.listen(4000,()=>{

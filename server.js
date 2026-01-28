@@ -31,7 +31,7 @@ function rotateIfNeeded(){
 
 function log(line){
     rotateIfNeeded(); // check if rotation is needed before logging
-    fs.appendFileSync(LOG_FILE,data+"\n"); // append the log data to the log file
+    fs.appendFileSync(LOG_FILE,line+"\n"); // append the log data to the log file
 }
 
 app.use((req,res,next)=>{
@@ -42,9 +42,10 @@ app.use((req,res,next)=>{
 
         const ms=Number(end-start)/1e6; // calculate duration in milliseconds
 
-        const ts=new Date().toLocalString("en-IN",{timeZone:"Asia/Kolkata"}); // get timestamp in specific timezone
+        const ts=new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}); // get timestamp in specific timezone
 
-        log(`[${ts}] ${req.ip} ${req.method} ${req.path} ${req.statusCode} ${ms.toFixed(2)}`); // log the request details
+        // use res.statusCode (not req) so the monitor can parse the correct status
+        log(`[${ts}] ${req.ip} ${req.method} ${req.path} ${res.statusCode} ${ms.toFixed(2)}`); // log the request details
     });
     next(); // proceed to the next middleware or route handler
 });
