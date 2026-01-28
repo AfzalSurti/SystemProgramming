@@ -55,3 +55,17 @@
 [27/1/2026, 6:22:14 pm] ::1 GET /login 500 - Random login failure
 [27/1/2026, 6:22:22 pm] ::1 GET /sdgkjnj 404
 [27/1/2026, 6:22:23 pm] ::1 GET /sdgkjnj 404
+[28/1/2026, 1:55:31 pm] ::1 GET / 200
+[28/1/2026, 1:55:31 pm] ::1 GET /favicon.ico 404
+[28/1/2026, 1:55:38 pm] ::1 GET / 200
+[28/1/2026, 1:55:42 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:55:50 pm] ::1 GET /login 200
+[28/1/2026, 1:55:52 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:55:54 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:55:55 pm] ::1 GET /login 200
+[28/1/2026, 1:55:57 pm] ::1 GET /login 200
+[28/1/2026, 1:56:08 pm] ::1 GET /login 200
+[28/1/2026, 1:56:09 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:56:16 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:56:21 pm] ::1 GET /login 500 - Random login failure
+[28/1/2026, 1:56:24 pm] ::1 GET /login 200

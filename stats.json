@@ -1,9 +1,9 @@
 {
-"total": 57,
-"error404": 7,
-"error500": 19,
-"timestamp": "2026-01-27T21:01:16India Standard Time",
+"total": 71,
+"error404": 8,
+"error500": 25,
+"timestamp": "2026-01-28T13:56:27India Standard Time",
 "unique_ips": [
-  {"ip": "::1", "count": 57}
+  {"ip": "::1", "count": 71}
 ]
 }
