@@ -131,3 +131,4 @@
 {"ts":"2026-01-28T08:26:09Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
 {"ts":"2026-01-28T08:26:17Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
 {"ts":"2026-01-28T08:26:21Z","ip":"::1","method":"GET","path":"/login","status":500,"raw":"::1 GET /login 500 - Random login failure"}
+{"ts":"2026-01-28T09:19:33Z","ip":"::1","method":"GET","path":"/favicon.ico","status":404,"raw":"::1 GET /favicon.ico 404"}

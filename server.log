@@ -69,3 +69,4 @@
 [28/1/2026, 1:56:16 pm] ::1 GET /login 500 - Random login failure
 [28/1/2026, 1:56:21 pm] ::1 GET /login 500 - Random login failure
 [28/1/2026, 1:56:24 pm] ::1 GET /login 200
+[28/1/2026, 2:49:32 pm] ::1 GET /favicon.ico 404
