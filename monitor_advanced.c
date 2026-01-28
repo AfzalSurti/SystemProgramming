@@ -7,6 +7,8 @@
 #include<time.h> // time functions for timestamp
 
 #define buffer_size 1024 // defining a constant for buffer size
+#define LAT_STORE 2000 // defining a constant for latency store 
+
 
 void append_event_jsonl(const char* ip, const char* method, const char* path, int status, const char* raw);
 
@@ -17,9 +19,16 @@ int error500=0;
 int prev_total=-1; // previous totals to avoid repeated printing
 int prev_error404=-1;
 int prev_error500=-1;
+double latency_sum=0.0;
+int latency_count=0;
+int last_error500=0; // timestamp of last 500 error
+time_t last_alert_time=0; // timestamp of last alert sent
+
 
 char ips[100][20]; // array to store unique IP addresses
 int ipCount[100]; // counter for unique IP addresses
+double latencies[LAT_STORE]; // array to store latencies
+int lat_idx=0; // index for latencies
 int ipIdx=0; // index for iterating through IP addresses
 
 CRITICAL_SECTION LOCK; // defining a critical section for thread synchronization
@@ -40,8 +49,15 @@ DWORD WINAPI process_line(LPVOID arg){  // thread function to process each line
     char method[16]=""; // to store HTTP method
     char path[256]=""; // to store request path
     int status=0; // to store status code
+    double latency=0.0; // to store latency
 
-    int n=sscanf(p, "%49s %15s %255s %d", ip,method,path,&status); // parse the line to extract IP, method, path, and status
+    int n=sscanf(p,"%49s %15s %255s %d %lf",ip,method,path,&status,&latency); // parsing the line to extract IP, method, path, status, and latency
+
+    if(n<4){
+        LeaveCriticalSection(&LOCK); // leaving critical section
+        free(line); // freeing allocated memory for line
+        return 0; // returning from thread function if parsing fails
+    }
 
     // parse the last token as the status code (handles end-of-line codes)
     if(status==404 || status==500){
@@ -57,6 +73,13 @@ DWORD WINAPI process_line(LPVOID arg){  // thread function to process each line
     }
     if(status == 500){
         error500++; // incrementing 500 error count if status parsed as 500
+    }
+
+    if(n==5){
+        latency_sum += latency; // adding latency to total latency sum
+        latency_count++; // incrementing latency count
+        latencies[lat_idx % LAT_STORE]=latency; // storing latency in latencies array
+        lat_idx++; // incrementing latency index
     }
 
     int found=0; // flag to check if IP is already in the list
@@ -80,16 +103,40 @@ DWORD WINAPI process_line(LPVOID arg){  // thread function to process each line
 
 }
 
+
+
 void export_CSV(){
     FILE *fp=fopen("report.csv","w"); // opening file in write mode
     fprintf(fp,"IP,Count\n"); // writing header to CSV file
     for(int i=0;i<ipIdx;i++){
         fprintf(fp,"%s,%d\n",ips[i],ipCount[i]); // writing IP and its count to CSV file
 
-    }
+    }   
 
     fclose(fp); // closing the file
 
+}
+
+int cmp_double(const void *a,const void *b){ // what this function do? - compare two double values
+    double da=*(const double*)a;
+    double db=*(const double*)b;
+    return (da>db)-(da<db); // return 1 if da>db, -1 if da<db, 0 if equal
+
+}
+
+double calc_p95(){
+    int n=(lat_idx < LAT_STORE) ? lat_idx : LAT_STORE; // number of latencies to consider
+    if(n<=0) return 0.0; // if no latencies, return 0
+
+    double copy[LAT_STORE]; // array to store copy of latencies
+    for(int i=0;i<n;i++){
+        copy[i]=latencies[i]; // copying latencies to new array - but why? - to avoid modifying original array
+    }
+
+    qsort(copy,n,sizeof(double),cmp_double); // sorting the copied latencies -  what is a qsort? - quicksort algorithm to sort array - and from where qsort comes? - from stdlib.h
+
+    int idx=(int)(0.95*n)-1; // calculating index for 95th percentile
+    return copy[idx]; // returning the 95th percentile latency - but why we calculate 95th percentile? - to understand latency distribution
 }
 
 void export_JSON(){
@@ -116,6 +163,11 @@ void export_JSON(){
         fprintf(fp,"\n");
     }
 
+    double avg_latency=(latency_count>0) ? (latency_sum/latency_count) : 0.0; // calculating average latency
+    double p95_latency=calc_p95(); // calculating 95th percentile latency
+
+    fprintf(fp,"\"avg_latency_ms\": %.2f,\n",avg_latency); // writing average latency to JSON file
+    fprintf(fp,"\"p95 latency_ms\": %.2f,\n",p95_latency);
     fprintf(fp,"]\n}\n"); // close array and object
     fclose(fp); // closing the file
 }
@@ -202,7 +254,17 @@ int main(){
             prev_error404 = error404;
             prev_error500 = error500;
         }
-
+        time_t now = time(NULL);
+        if(error500-last_error500 >=5 && (now-last_alert_time>=10)){
+            FILE *a=fopen("alerts.jsonl","a");
+            if(a){
+                fprintf(a,"{\"ts\":%ld,\"type\":\"HIGH_500_RATE\",\"prev\":%d,\"now\":%d}\n",(long)now,last_error500,error500);
+                fclose(a);
+                
+            }
+            last_alert_time=now;
+        }
+        last_error500=error500;
         Sleep(2000); // sleeping for 2 seconds before reprocessing (Windows)
     }
     return 0;
