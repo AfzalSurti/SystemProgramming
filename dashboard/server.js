@@ -1,6 +1,7 @@
 // why we writting this?
 
 const express = require('express');
+const nodemailer = require('nodemailer');
 const fs=require('fs');
 const path = require("path");
 
@@ -14,7 +15,60 @@ const EVENTS_PATH=path.join(ROOT,"events.jsonl");
 const INCIDENTS_PATH=path.join(ROOT,"incidents.json");
 const ALERTS_PATH=path.join(ROOT,"alerts.jsonl");
 const SAMPLE_LIMIT=0; // 0 = no limit (show all samples in the UI)
+const EMAIL_FROM=process.env.ALERT_EMAIL_FROM ;
+const EMAIL_TO=process.env.ALERT_EMAIL_TO;
+const EMAIL_PASS=process.env.ALERT_EMAIL_PASS;
+let lastAlertTs = 0; // remember last sent alert timestamp to avoid duplicates
 
+const GEMINI_API_KEY=process.env.GEMINI_API_KEY;
+const GEMINI_MODEL=process.env.GEMINI_MODEL || "gemini-1.5-pro";
+
+async function buildEmailWithGemini(alert){
+    // build email body using Gemini API
+    const prompt=`you are an SRE assisatnt. Write a short email about this  alert.
+    Alert:
+    - Type: ${alert.type}
+    - Prev: ${alert.prev}
+    -Now: ${alert.now}
+    -Time (epoch): ${alert.ts}
+
+    Requirements:
+    - 1 subject line (plain text)
+    - 1 short email body (3-6 lines)
+    - Use clear, professional tone
+    - Include suggested next action
+    return JSON: {"subject":"..","body":"...}
+    `.trim();
+
+    const res=await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                contents:[{role:"user",parts:[{text: prompt}]}]
+            })
+        }
+    );
+    
+    const data=await res.json();
+    const text=data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    try{
+        return JSON.parse(text);
+    }catch{
+        return null;
+    }
+
+}
+
+const mailer=nodemailer.createTransport({ // configure nodemailer transporter
+    service:"gmail",
+    auth:{
+        user:EMAIL_FROM,
+        pass:EMAIL_PASS,
+    },
+});
 
 function readJsonSafe(filePath,fallback){ // read json file with fallback
     try{
@@ -75,7 +129,7 @@ function buildIncidents(events){
 
 // auto - regrouped evry 2 seconds - means it fetch record for incidents.json every 2 seconds 
 // my moto is a one complet website was there 1- testing one - 1 for  dashbard 
-setInterval(()=>{
+setInterval(()=>{ // regroup incidents every 2 seconds
     try{
         const events=readJsonlSafe(EVENTS_PATH);
         const incidents=buildIncidents(events);
@@ -86,6 +140,38 @@ setInterval(()=>{
 
     }
 },2000);
+
+setInterval(async ()=>{ // check for new alerts every 2 seconds
+    try{
+        const alerts=readJsonSafe(ALERTS_PATH); // read all alerts
+        if(!alerts.length) return;//   no alerts
+
+        const latest = alerts[alerts.length-1]; // get the latest alert
+        if(!latest || !latest.ts) return ; // invalid alert
+
+        if(latest.ts<=latestAlertTs) return ; // already sent this alert
+
+        latestAlertTs=latest.ts; // update last sent alert timestamp
+
+        // send email
+
+        const subject=`[ALERT] ${latest.type || "ALERT"} (${latest.now})`; // email subject
+        // let use here the gemini api to form a better email body    
+        const body=`
+        Time: ${new Date(latest.ts * 1000).toLocaleString("en-IN",{timeZone:"Asia/Kolkata"})}
+        Type:${latest.type}
+        Prev:${latest.prev}
+        Now:${latest.now}
+        `.trim();
+
+        const gem=await buildEmailWithGemini(latest);
+        if(gem?.subject) subject=gem.subject;
+        if(gem?.body) body=gem.body;
+        
+    }catch{
+        // ignore errors
+    }
+},2000); // keep the process alive
 
 app.get("/api/stats",(req,res) => { // endpoint to get stats
     res.json(readJsonSafe(STATS_PATH,{}));
