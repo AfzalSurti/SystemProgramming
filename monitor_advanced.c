@@ -16,6 +16,8 @@ void append_event_jsonl(const char* ip, const char* method, const char* path, in
 int total=0;
 int error404=0;
 int error500=0;
+int error4xx=0; // count of 4xx errors
+int error5xx=0; // count of 5xx errors
 int prev_total=-1; // previous totals to avoid repeated printing
 int prev_error404=-1;
 int prev_error500=-1;
@@ -94,12 +96,20 @@ DWORD WINAPI process_line(LPVOID arg){  // thread function to process each line
         append_event_jsonl(ip,method,path,status,p);
     }
 
-    if(status>=400 && status<=499){
+    if(status==404){
         error404++; // incrementing 404 error count
     }
 
-    if(status>=500 && status<=599){
+    if(status==500){
         error500++; // incrementing 500 error count
+    }
+
+    if(status>=400 && status<=499){
+        error4xx++; // incrementing 4xx error count
+    }
+
+    if(status>=500 && status<=599){
+        error5xx++; // incrementing 5xx error count
     }
 
     if(n==5){
