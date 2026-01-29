@@ -4,6 +4,7 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const fs=require('fs');
 const path = require("path");
+const { error } = require('console');
 
 const app=express();
 app.use(express.json()); // for parsing application/json
@@ -19,12 +20,28 @@ const EMAIL_FROM=process.env.ALERT_EMAIL_FROM ;
 const EMAIL_TO=process.env.ALERT_EMAIL_TO;
 const EMAIL_PASS=process.env.ALERT_EMAIL_PASS;
 let lastAlertTs = 0; // remember last sent alert timestamp to avoid duplicates
+let lastGeminiTs=0; // last time we used gemini api
+const GEMINI_COOLDOWN_MS=5*60*1000; // 5 minutes cooldown between gemini api calls
+
+let lastEmailStatus={
+    ts:null,
+    subject:null,
+    to:null,
+    ok:false,
+    error:null
+}
+
 
 const GEMINI_API_KEY=process.env.GEMINI_API_KEY;
 const GEMINI_MODEL=process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
-async function buildEmailWithGemini(alert){
+async function buildEmailWithGemini(alert,incidents){
     // build email body using Gemini API
+
+    const incidentText=(incidents || []).slice(0,5).map((i,idx)=>{
+        return `${idx+1}) ${i.path} | ${i.status} | count=${i.count} | lastSeen=${i.lastSeen}`;
+    }).join("\n");
+
     const prompt=`you are an SRE assisatnt. Write a short email about this  alert.
     Alert:
     - Type: ${alert.type}
@@ -154,7 +171,7 @@ setInterval(async ()=>{ // check for new alerts every 2 seconds
         latestAlertTs=latest.ts; // update last sent alert timestamp
 
         // send email
-
+        const now=Date.now();
         const subject=`[ALERT] ${latest.type || "ALERT"} (${latest.now})`; // email subject
         // let use here the gemini api to form a better email body    
         const body=`
@@ -164,14 +181,47 @@ setInterval(async ()=>{ // check for new alerts every 2 seconds
         Now:${latest.now}
         `.trim();
 
-        const gem=await buildEmailWithGemini(latest);
+        const incidents=readJsonSafe(INCIDENTS_PATH,[]); // read current incidents
+        if(now-lastGeminiTs > GEMINI_COOLDOWN_MS){
+            const gem=await buildEmailWithGemini(latest,incidents);
+            if(gem?.subject) subject=gem.subject;
+            if(gem?.body) body=gem.body;
+            lastGeminiTs=now;
+        }
+
+        const gem=await buildEmailWithGemini(latest, incidents);
         if(gem?.subject) subject=gem.subject;
         if(gem?.body) body=gem.body;
+
+        try{
+            await mailer.sendMail({from:EMAIL_FROM,to:EMAIL_TO,subject, text:body});
+
+            lastEmailStatus={
+                ts:Date.now(),
+                subject,
+                to:EMAIL_TO,
+                ok:true,
+                error:null
+            };
+        }catch(err){
+            lastEmailStatus={
+                ts:Date.now(),
+                subject,
+                to:EMAIL_TO,
+                ok:false,
+                error:err.message
+            };
+        }
         
     }catch{
         // ignore errors
     }
 },2000); // keep the process alive
+
+app.get("/api/email-status", (req,res)=>{
+  res.json(lastEmailStatus);
+});
+
 
 app.get("/api/stats",(req,res) => { // endpoint to get stats
     res.json(readJsonSafe(STATS_PATH,{}));

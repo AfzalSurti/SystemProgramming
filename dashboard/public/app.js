@@ -57,10 +57,11 @@ function latencyHealth(avg, p95){ // simple local heuristic (no external model)
 
 async function loadAll(manual=false){ // load all incidents from server
     try{
-        const [stats,incidents,alerts]=await Promise.all([
+        const [stats,incidents,alerts,emailStatus]=await Promise.all([
             fetch("/api/stats").then(res=>res.json()),
             fetch("/api/incidents").then(res=>res.json()),
-            fetch("/api/alerts").then(res=>res.json())
+            fetch("/api/alerts").then(res=>res.json()),
+            fetch("/api/email-status").then(res=>res.json())
         ]);
 
         const total=stats.total ?? 0;
@@ -71,6 +72,9 @@ async function loadAll(manual=false){ // load all incidents from server
         const ts=stats.timestamp ?? "N/A";
         const avgLatency=Number(stats.avg_latency_ms ?? 0);
         const p95Latency=Number(stats.p95_latency_ms ?? 0);
+
+        
+
 
         document.getElementById("statTotal").textContent=total;
         document.getElementById("stat404").textContent=error404;
@@ -93,6 +97,9 @@ async function loadAll(manual=false){ // load all incidents from server
         const alertList=Array.isArray(alerts) ? alerts : [];
         document.getElementById("statAlerts").textContent=alertList.length;
         renderAlerts(alertList);
+
+        document.getElementById("statEmail").textContent = emailStatus.ts ? new Date(emailStatus.ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : "-";
+        document.getElementById("statEmailMeta").textContent = emailStatus.ok ? `Last email sent to ${emailStatus.to}: ${emailStatus.subject}` : `No emails sent yet or last email failed.`;
 
         setLive(true, manual ? "Manual refresh successful" : "Live");
     }catch(err){
