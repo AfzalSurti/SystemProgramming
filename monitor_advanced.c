@@ -197,6 +197,8 @@ void export_JSON(){
     fprintf(fp,"\"total\": %d,\n", total);
     fprintf(fp,"\"error404\": %d,\n", error404);
     fprintf(fp,"\"error500\": %d,\n", error500);
+    fprintf(fp,"\"error4xx\": %d,\n", error4xx);
+    fprintf(fp,"\"error5xx\": %d,\n", error5xx);
     fprintf(fp,"\"timestamp\": \"%s\",\n", timestamp);
 
     double avg_latency=(latency_count>0) ? (latency_sum/latency_count) : 0.0; // calculating average latency
