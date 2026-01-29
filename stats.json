@@ -1,11 +1,11 @@
 {
-"total": 46,
-"error404": 5,
-"error500": 22,
-"timestamp": "2026-01-28T17:50:56+05:30",
-"avg_latency_ms": 6.71,
+"total": 64,
+"error404": 6,
+"error500": 28,
+"timestamp": "2026-01-29T12:21:11+05:30",
+"avg_latency_ms": 6.07,
 "p95_latency_ms": 15.55,
 "unique_ips": [
-  {"ip": "::1", "count": 46}
+  {"ip": "::1", "count": 64}
 ]
 }

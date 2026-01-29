@@ -52,27 +52,54 @@ DWORD WINAPI process_line(LPVOID arg){  // thread function to process each line
     double latency=0.0; // to store latency
 
     int n=sscanf(p,"%49s %15s %255s %d %lf",ip,method,path,&status,&latency); // parsing the line to extract IP, method, path, status, and latency
+    if(n<4){
+        n=sscanf(p,"%49s %15s %255s %d",ip,method,path,&status); // try parsing without latency
+    }
 
+    
     if(n<4){
         LeaveCriticalSection(&LOCK); // leaving critical section
         free(line); // freeing allocated memory for line
         return 0; // returning from thread function if parsing fails
     }
+    
+    latency=0.0; // default latency to 0.0
+    const char *rest=p;
+    int skip=0;
+    sscanf(rest,"%49s %15s %255s %d %n",ip,method,path,&status,&skip); // re-parse to find position after status code
+
+    if(skip>0){
+        double tmp=0.0;
+        if(sscanf(rest+skip,"%lf",&tmp)==1){ // try to parse latency
+            latency=tmp; // if latency is present, set it
+            n=5; // set n to 5 indicating latency was found
+        }
+    }
+
+    if(n==4)  
+    {
+        latency=0.0; // if latency not present, set to 0
+    }
+
+    if(status<100 || status>599){
+        LeaveCriticalSection(&LOCK); // leaving critical section
+        free(line); // freeing allocated memory for line
+        return 0; // returning from thread function if status code is invalid
+    }
+
+
 
     // parse the last token as the status code (handles end-of-line codes)
-    if(status==404 || status==500){
-        // already parsed correctly
-        append_event_jsonl(ip,method,path,status,p); // log event to JSONL file
+    if(status>=400 && status<=599){ // checking if status code indicates an error
+        append_event_jsonl(ip,method,path,status,p);
     }
-    
 
-    
-    total++; // incrementing total request count
-    if(status == 404){
-        error404++; // incrementing 404 error count if status parsed as 404
+    if(status>=400 && status<=499){
+        error404++; // incrementing 404 error count
     }
-    if(status == 500){
-        error500++; // incrementing 500 error count if status parsed as 500
+
+    if(status>=500 && status<=599){
+        error500++; // incrementing 500 error count
     }
 
     if(n==5){
