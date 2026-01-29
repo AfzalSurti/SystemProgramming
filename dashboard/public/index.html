@@ -81,6 +81,15 @@
           <div class="v" id="statEmail">-</div>
           <div class="muted" id="statEmailMeta">No emails sent yet.</div>
         </div>
+        <div class="card">
+          <div class="k">Send Summary</div>
+          <div class="muted">Email on demand (Daily / Weekly / Monthly)</div>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <button class="btn" id="btnDaily">Send Daily</button>
+            <button class="btn" id="btnWeekly">Send Weekly</button>
+            <button class="btn" id="btnMonthly">Send Monthly</button>
+          </div>
+        </div>
       </section>
 
       <section class="content">
@@ -124,6 +133,40 @@
           <div id="alertsWrap" class="empty">No alerts yet.</div>
         </div>
       </section>
+    </div>
+    <div class="modalOverlay" id="summaryModal" aria-hidden="true">
+      <div class="modal">
+        <div class="panelTitle">Send Summary Email</div>
+        <div class="muted">Choose period, recipient, and how many items to include.</div>
+        <div class="sp10"></div>
+        <div class="modalGrid">
+          <label class="field">
+            <span class="muted">Period</span>
+            <select class="select" id="summaryPeriod">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="muted">Recipient Email</span>
+            <input class="input" id="summaryEmail" placeholder="name@example.com" />
+          </label>
+          <label class="field">
+            <span class="muted">Last N Alerts</span>
+            <input class="input" id="summaryAlertsN" type="number" min="1" max="100" value="5" />
+          </label>
+          <label class="field">
+            <span class="muted">Top N Incidents</span>
+            <input class="input" id="summaryIncidentsN" type="number" min="1" max="100" value="5" />
+          </label>
+        </div>
+        <div class="modalActions">
+          <button class="btn" id="summaryCancel">Cancel</button>
+          <button class="btn" id="summarySend">Send</button>
+        </div>
+        <div class="muted" id="summaryError" style="margin-top:8px; display:none;"></div>
+      </div>
     </div>
     <script src="./app.js"></script>
   </body>

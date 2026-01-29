@@ -98,8 +98,13 @@ async function loadAll(manual=false){ // load all incidents from server
         document.getElementById("statAlerts").textContent=alertList.length;
         renderAlerts(alertList);
 
-        document.getElementById("statEmail").textContent = emailStatus.ts ? new Date(emailStatus.ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : "-";
-        document.getElementById("statEmailMeta").textContent = emailStatus.ok ? `Last email sent to ${emailStatus.to}: ${emailStatus.subject}` : `No emails sent yet or last email failed.`;
+        const emailTime = emailStatus.ts
+          ? new Date(emailStatus.ts).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+          : "-";
+        document.getElementById("statEmail").textContent = emailStatus.ok ? "Sent" : "Failed";
+        document.getElementById("statEmailMeta").textContent = emailStatus.ts
+          ? `${emailTime} | ${emailStatus.ok ? "To " + (emailStatus.to || "-") : "Error"} | ${emailStatus.subject || emailStatus.error || "-" }`
+          : "No emails sent yet.";
 
         setLive(true, manual ? "Manual refresh successful" : "Live");
     }catch(err){
@@ -268,11 +273,69 @@ function renderAlerts(alerts){ // render alerts list from alerts.jsonl
   wrap.innerHTML=items;
 }
 
+function validEmail(email){ // simple email validation
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "");
+}
+
+function openSummaryModal(period){ // open summary modal
+  const modal = document.getElementById("summaryModal");
+  const error = document.getElementById("summaryError");
+  document.getElementById("summaryPeriod").value = period || "daily";
+  document.getElementById("summaryEmail").value = "";
+  document.getElementById("summaryAlertsN").value = "5";
+  document.getElementById("summaryIncidentsN").value = "5";
+  error.style.display = "none";
+  error.textContent = "";
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function closeSummaryModal(){ // close summary modal
+  const modal = document.getElementById("summaryModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+}
+
+async function sendSummaryFromModal(){ // send summary email
+  const period = document.getElementById("summaryPeriod").value;
+  const to = document.getElementById("summaryEmail").value.trim();
+  const alertsN = Number(document.getElementById("summaryAlertsN").value || 5);
+  const incidentsN = Number(document.getElementById("summaryIncidentsN").value || 5);
+  const error = document.getElementById("summaryError");
+
+  if (!validEmail(to)){
+    error.textContent = "Please enter a valid email address.";
+    error.className = "muted errorText";
+    error.style.display = "block";
+    return;
+  }
+
+  const res = await fetch("/api/email-summary", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ period, to, alertsN, incidentsN })
+  });
+  const data = await res.json();
+  if (data.ok){
+    closeSummaryModal();
+    alert("Summary email sent.");
+  }else{
+    error.textContent = data.error || "Failed to send summary.";
+    error.className = "muted errorText";
+    error.style.display = "block";
+  }
+}
+
 // wire inputs
 document.getElementById("q").addEventListener("input", renderTable);
 document.getElementById("filter").addEventListener("change", renderTable);
 document.getElementById("sort").addEventListener("change", renderTable);
 document.getElementById("refreshBtn").addEventListener("click", () => loadAll(true));
+document.getElementById("btnDaily").addEventListener("click", () => openSummaryModal("daily"));
+document.getElementById("btnWeekly").addEventListener("click", () => openSummaryModal("weekly"));
+document.getElementById("btnMonthly").addEventListener("click", () => openSummaryModal("monthly"));
+document.getElementById("summaryCancel").addEventListener("click", closeSummaryModal);
+document.getElementById("summarySend").addEventListener("click", sendSummaryFromModal);
 
 // start polling
 loadAll();

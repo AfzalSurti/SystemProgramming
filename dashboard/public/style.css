@@ -183,6 +183,40 @@ tr:hover{background:rgba(255,255,255,0.04)}
 .alertTitle{font-weight:700; font-size:12px}
 .alertMeta{font-size:12px; color:var(--muted); margin-top:4px}
 
+/* Summary modal */
+.modalOverlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(6,10,18,0.6);
+  backdrop-filter: blur(6px);
+  z-index:1000;
+}
+.modalOverlay.show{display:flex}
+.modal{
+  width:min(720px, 92vw);
+  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 18px 50px rgba(0,0,0,0.35);
+}
+.modalGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.field{display:flex; flex-direction:column; gap:6px}
+.modalActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+.errorText{color:#fecaca}
+
 pre{
   margin:0;
   white-space:pre-wrap;
@@ -204,4 +238,5 @@ pre{
   .header{flex-direction:column; align-items:flex-start}
   .content{grid-template-columns: 1fr}
   .input{min-width: 180px}
+  .modalGrid{grid-template-columns: 1fr}
 }
